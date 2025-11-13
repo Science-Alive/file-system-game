@@ -1,5 +1,5 @@
 {
-  "name": "File System Escape Room",
-  "description": "An interactive game to learn command-line file system navigation and manipulation. Solve puzzles by creating, deleting, and navigating files and folders in a simulated environment.",
+  "name": "File System Escape",
+  "description": "An interactive game to learn how to navigate around a gui file system. Solve puzzles by creating, deleting, and navigating files and folders in a simulated environment.",
   "requestFramePermissions": []
 }
