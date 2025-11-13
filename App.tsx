@@ -193,7 +193,7 @@ export default function App() {
     <div className="font-sans min-h-screen flex flex-col p-4 gap-4">
       <header className="text-center relative">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-wider">
-          File System <span className="text-primary">Adventure</span>
+          File System <span className="text-primary">Escape</span>
         </h1>
         <p className="text-gray-500 dark:text-brand-muted">Learn file management by solving puzzles in this interactive GUI.</p>
         <button
