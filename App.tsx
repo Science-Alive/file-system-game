@@ -147,20 +147,14 @@ export default function App() {
 
   const currentTask = TASKS[taskIndex];
 
-  const checkCompletion = useCallback(() => {
-    // A small delay to allow React state to propagate before validating
-    setTimeout(() => {
-        const isComplete = currentTask.validate(fs, currentPath);
-        if (isComplete) {
-            setTaskCompleted(true);
-        }
-    }, 100);
-  }, [currentTask, fs, currentPath]);
+  useEffect(() => {
+    if (taskCompleted) return; // Don't re-validate if already completed
 
-  const handleAction = useCallback((actionFn: () => any) => {
-    actionFn();
-    checkCompletion();
-  }, [checkCompletion]);
+    const isComplete = currentTask.validate(fs, currentPath);
+    if (isComplete) {
+        setTaskCompleted(true);
+    }
+  }, [currentTask, fs, currentPath, taskCompleted]);
 
 
   const handleNextTask = () => {
@@ -179,18 +173,17 @@ export default function App() {
   
   const handleNodeDoubleClick = (node: FileSystemNode) => {
       if (node.type === NodeType.DIRECTORY) {
-          handleAction(() => cd(node.name));
+          cd(node.name);
       } else {
           setViewingFile(node);
-          checkCompletion(); // Check completion after viewing a file
       }
   };
   
   const handleCreate = (name: string) => {
     if (prompt.type === 'file') {
-        handleAction(() => touch(name));
+        touch(name);
     } else {
-        handleAction(() => mkdir(name));
+        mkdir(name);
     }
     setPrompt({ type: 'file', visible: false });
   };
@@ -200,7 +193,7 @@ export default function App() {
     <div className="font-sans min-h-screen flex flex-col p-4 gap-4">
       <header className="text-center relative">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-wider">
-          File System <span className="text-primary">Escape</span>
+          File System <span className="text-primary">Adventure</span>
         </h1>
         <p className="text-gray-500 dark:text-brand-muted">Learn file management by solving puzzles in this interactive GUI.</p>
         <button
@@ -219,8 +212,8 @@ export default function App() {
                 nodes={ls()}
                 path={currentPath}
                 onNodeDoubleClick={handleNodeDoubleClick}
-                onGoToPath={(path) => handleAction(() => goToPath(path))}
-                onRequestDelete={(node) => handleAction(() => rm(node.name))}
+                onGoToPath={goToPath}
+                onRequestDelete={(node) => rm(node.name)}
                 onRequestCreateFile={() => setPrompt({type: 'file', visible: true})}
                 onRequestCreateFolder={() => setPrompt({type: 'folder', visible: true})}
             />
