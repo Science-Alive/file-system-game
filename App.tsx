@@ -69,17 +69,14 @@ const TaskDisplay: React.FC<{ task: Task; onHint: () => void; onUndo: () => void
   </div>
 );
 
-const SuccessOverlay: React.FC<{ message: string, onNext: () => void }> = ({ message, onNext }) => (
+const SuccessOverlay: React.FC<{ title: string; message: string; children: React.ReactNode; }> = ({ title, message, children }) => (
     <div className="absolute inset-0 bg-gray-900 bg-opacity-75 flex flex-col items-center justify-center z-50 p-4">
         <div className="bg-white dark:bg-brand-background border-2 border-primary rounded-lg p-8 text-center shadow-2xl">
-            <h2 className="text-3xl font-bold text-primary mb-4">Task Complete!</h2>
+            <h2 className="text-3xl font-bold text-primary mb-4">{title}</h2>
             <p className="text-xl text-gray-800 dark:text-white mb-6">{message}</p>
-            <button
-                onClick={onNext}
-                className="bg-primary text-white font-bold py-2 px-6 rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
-            >
-                Next Task
-            </button>
+            <div className="flex justify-center gap-4">
+                {children}
+            </div>
         </div>
     </div>
 );
@@ -136,7 +133,7 @@ const InputPromptModal: React.FC<{ title: string; onClose: () => void; onSubmit:
 
 
 export default function App() {
-  const { fs, currentPath, ls, cd, mkdir, touch, rm, cat, goToPath, undo, canUndo } = useFileSystem();
+  const { fs, currentPath, ls, cd, mkdir, touch, rm, cat, goToPath, undo, canUndo, reset } = useFileSystem();
   const [taskIndex, setTaskIndex] = useState(0);
   const [taskCompleted, setTaskCompleted] = useState(false);
   const [viewingFile, setViewingFile] = useState<FileSystemNode | null>(null);
@@ -146,6 +143,7 @@ export default function App() {
 
 
   const currentTask = TASKS[taskIndex];
+  const isLastTask = taskIndex === TASKS.length - 1;
 
   useEffect(() => {
     if (taskCompleted) return; // Don't re-validate if already completed
@@ -163,6 +161,17 @@ export default function App() {
     if (taskIndex < TASKS.length - 1) {
       setTaskIndex(taskIndex + 1);
     }
+  };
+
+  const handleRestart = () => {
+      reset();
+      setTaskIndex(0);
+      setTaskCompleted(false);
+      setHint(null);
+  };
+  
+  const handleCloseTab = () => {
+      window.close();
   };
 
   const handleGetHint = () => {
@@ -193,7 +202,7 @@ export default function App() {
     <div className="font-sans min-h-screen flex flex-col p-4 gap-4">
       <header className="text-center relative">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white tracking-wider">
-          File System <span className="text-primary">Escape</span>
+          File System <span className="text-primary">Adventure</span>
         </h1>
         <p className="text-gray-500 dark:text-brand-muted">Learn file management by solving puzzles in this interactive GUI.</p>
         <button
@@ -219,7 +228,30 @@ export default function App() {
             />
         </div>
       </main>
-      {taskCompleted && <SuccessOverlay message={currentTask.successMessage} onNext={handleNextTask} />}
+      {taskCompleted && (
+          isLastTask ? (
+              <SuccessOverlay
+                  title="Mission Accomplished!"
+                  message="You've mastered the file system and successfully escaped. Congratulations!"
+              >
+                  <button
+                      onClick={handleRestart}
+                      className="bg-primary text-white font-bold py-2 px-6 rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
+                  >
+                      Restart Game
+                  </button>
+              </SuccessOverlay>
+          ) : (
+              <SuccessOverlay title="Task Complete!" message={currentTask.successMessage}>
+                  <button
+                      onClick={handleNextTask}
+                      className="bg-primary text-white font-bold py-2 px-6 rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
+                  >
+                      Next Task
+                  </button>
+              </SuccessOverlay>
+          )
+      )}
       {viewingFile && <FileViewerModal file={viewingFile} onClose={() => setViewingFile(null)} />}
       {prompt.visible && <InputPromptModal title={`Create New ${prompt.type === 'file' ? 'File' : 'Folder'}`} onClose={() => setPrompt({type: 'file', visible: false})} onSubmit={handleCreate} />}
     </div>

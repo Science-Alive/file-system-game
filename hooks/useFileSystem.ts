@@ -122,5 +122,11 @@ export default function useFileSystem() {
       return null;
   }, [fs, currentPath]);
 
-  return { fs, currentPath, ls, cd, mkdir, touch, rm, cat, goToPath, undo, canUndo };
+  const reset = useCallback(() => {
+    setFs(deepClone(INITIAL_FILESYSTEM));
+    setCurrentPath('~');
+    setHistory([]);
+  }, []);
+
+  return { fs, currentPath, ls, cd, mkdir, touch, rm, cat, goToPath, undo, canUndo, reset };
 }

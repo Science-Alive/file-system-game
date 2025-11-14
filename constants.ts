@@ -30,10 +30,10 @@ export const INITIAL_FILESYSTEM: Directory = {
       type: NodeType.DIRECTORY,
       children: {}
     },
-    'useless_file.txt': {
-      name: 'useless_file.txt',
+    'evidence.txt': {
+      name: 'evidence.txt',
       type: NodeType.FILE,
-      content: 'This file is not useful. You can delete it.'
+      content: 'This file holds sensitive information. You should delete it.'
     },
   },
 };
@@ -69,9 +69,9 @@ export const TASKS: Task[] = [
   },
   {
     title: "Task 4: Clean Up",
-    description: "There's a 'useless_file.txt' in the home directory ('~'). Navigate back there, then right-click the file and delete it.",
+    description: "There's an 'evidence.txt' in the home directory ('~'). Navigate back there, then right-click the file and delete it.",
     validate: (fs, currentPath) => {
-        const node = getNodeFromPath(fs, '~/useless_file.txt');
+        const node = getNodeFromPath(fs, '~/evidence.txt');
         return node === null;
     },
     successMessage: "No trace left behind. Your final task is to find your escape route.",
